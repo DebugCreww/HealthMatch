@@ -1,0 +1,52 @@
+services:
+  auth-service:
+    build:
+      context: ./auth-service
+    ports:
+      - "8001:8000"
+    networks:
+      - backend
+
+  user-service:
+    build:
+      context: ./user-service
+    ports:
+      - "8002:8000"
+    networks:
+      - backend
+
+  catalog-service:
+    build:
+      context: ./catalog-service
+    ports:
+      - "8004:8000"
+    networks:
+      - backend
+
+  booking-service:
+    build:
+      context: ./booking-service
+    ports:
+      - "8003:8000"
+    networks:
+      - backend
+
+  payment-service:
+    build:
+      context: ./payment-service
+    ports:
+      - "8005:8000"
+    networks:
+      - backend
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+    ports:
+      - "8000:8000"
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
