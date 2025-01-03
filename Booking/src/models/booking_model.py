@@ -3,8 +3,10 @@ from sqlalchemy.ext.declarative import declarative_base
 from pydantic import BaseModel
 from datetime import datetime
 
+# Creazione della base dichiarativa per SQLAlchemy
 Base = declarative_base()
 
+# Definizione del modello Booking
 class Booking(Base):
     __tablename__ = "bookings"
     id = Column(Integer, primary_key=True, index=True)

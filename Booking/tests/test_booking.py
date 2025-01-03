@@ -1,8 +1,10 @@
 from fastapi.testclient import TestClient
 from src.main import app
 
+# Creazione di un client di test
 client = TestClient(app)
 
+# Test per la creazione di una prenotazione
 def test_create_booking():
     response = client.post("/api/v1/bookings/", json={
         "client_id": 1,
