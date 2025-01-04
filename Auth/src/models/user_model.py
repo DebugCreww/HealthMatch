@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String, create_engine
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 
 # Creazione della base dichiarativa per SQLAlchemy
 Base = declarative_base()
@@ -8,9 +9,13 @@ Base = declarative_base()
 class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
-    username = Column(String, unique=True, index=True)
-    password = Column(String)
+    name = Column(String, nullable=False)
+    email = Column(String, unique=True, nullable=False, index=True)
+    password = Column(String, nullable=False)
+    role = Column(String, nullable=False)
 
-# Esempio di configurazione della connessione al database
-engine = create_engine("sqlite:///auth.db")
+# Configurazione database
+DATABASE_URL = "sqlite:///./auth.db"
+engine = create_engine(DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base.metadata.create_all(bind=engine)
