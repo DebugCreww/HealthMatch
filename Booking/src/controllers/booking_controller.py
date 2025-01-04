@@ -1,39 +1,48 @@
 from fastapi import APIRouter, HTTPException, Depends
-from src.services.booking_service import create_booking, get_booking, update_booking
+from sqlalchemy.orm import Session
 from src.models.booking_model import BookingSchema, BookingUpdateSchema
+from src.services.booking_service import create_booking, get_booking, get_user_bookings, update_booking, delete_booking
+from src.db.session import get_db
 
 # Creazione di un router per il controller di prenotazione
 router = APIRouter()
 
 # Rotta per creare una nuova prenotazione
 @router.post("/bookings/")
-def create_new_booking(booking: BookingSchema):
-    # Creazione della prenotazione
-    booking_id = create_booking(booking)
-    # Se la creazione fallisce, solleva un'eccezione HTTP
+def create_new_booking(booking: BookingSchema, db: Session = Depends(get_db)):
+    booking_id = create_booking(booking, db)
     if not booking_id:
         raise HTTPException(status_code=400, detail="Unable to create booking")
-    # Restituisce l'ID della prenotazione creata
-    return {"booking_id": booking_id}
+    return {"message": "Booking created successfully", "booking_id": booking_id}
 
 # Rotta per ottenere i dettagli di una prenotazione esistente
 @router.get("/bookings/{booking_id}")
-def get_booking_details(booking_id: int):
-    # Ottenimento della prenotazione
-    booking = get_booking(booking_id)
-    # Se la prenotazione non esiste, solleva un'eccezione HTTP
+def get_booking_details(booking_id: int, db: Session = Depends(get_db)):
+    booking = get_booking(booking_id, db)
     if not booking:
         raise HTTPException(status_code=404, detail="Booking not found")
-    # Restituisce i dettagli della prenotazione
     return booking
 
-# Rotta per aggiornare una prenotazione esistente
+# Rotta per ottenere l'elenco delle prenotazioni di un utente
+@router.get("/bookings/user/{user_id}")
+def get_user_bookings_list(user_id: int, db: Session = Depends(get_db)):
+    bookings = get_user_bookings(user_id, db)
+    if not bookings:
+        raise HTTPException(status_code=404, detail="No bookings found for this user")
+    return bookings
+
+# Rotta per aggiornare lo stato di una prenotazione esistente
 @router.put("/bookings/{booking_id}")
-def update_booking_details(booking_id: int, booking_update: BookingUpdateSchema):
-    # Aggiornamento della prenotazione
-    updated = update_booking(booking_id, booking_update)
-    # Se l'aggiornamento fallisce, solleva un'eccezione HTTP
+def update_booking_status(booking_id: int, booking_update: BookingUpdateSchema, db: Session = Depends(get_db)):
+    updated = update_booking(booking_id, booking_update, db)
     if not updated:
         raise HTTPException(status_code=400, detail="Unable to update booking")
-    # Restituisce un messaggio di successo
     return {"message": "Booking updated successfully"}
+
+# Rotta per eliminare una prenotazione esistente
+@router.delete("/bookings/{booking_id}")
+def delete_booking_record(booking_id: int, db: Session = Depends(get_db)):
+    deleted = delete_booking(booking_id, db)
+    if not deleted:
+        raise HTTPException(status_code=400, detail="Unable to delete booking")
+    return {"message": "Booking deleted successfully"}

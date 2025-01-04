@@ -14,3 +14,27 @@ def test_create_booking():
     })
     assert response.status_code == 200
     assert "booking_id" in response.json()
+
+# Test per ottenere i dettagli di una prenotazione
+def test_get_booking():
+    response = client.get("/api/v1/bookings/1")
+    assert response.status_code == 200
+    assert "client_id" in response.json()
+
+# Test per ottenere le prenotazioni di un utente
+def test_get_user_bookings():
+    response = client.get("/api/v1/bookings/user/1")
+    assert response.status_code == 200
+    assert isinstance(response.json(), list)
+
+# Test per aggiornare lo stato di una prenotazione
+def test_update_booking():
+    response = client.put("/api/v1/bookings/1", json={"status": "confirmed"})
+    assert response.status_code == 200
+    assert response.json()["message"] == "Booking updated successfully"
+
+# Test per eliminare una prenotazione
+def test_delete_booking():
+    response = client.delete("/api/v1/bookings/1")
+    assert response.status_code == 200
+    assert response.json()["message"] == "Booking deleted successfully"

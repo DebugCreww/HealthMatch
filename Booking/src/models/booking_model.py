@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from pydantic import BaseModel
 from datetime import datetime
@@ -14,7 +14,7 @@ class Booking(Base):
     professional_id = Column(Integer, nullable=False)
     service_id = Column(Integer, nullable=False)
     date_time = Column(DateTime, nullable=False)
-    status = Column(String, default="pending")  # pending, confirmed, cancelled
+    status = Column(String, default="pending")  # pending, confirmed, completed, cancelled
 
 # Schema per la validazione dei dati in ingresso/uscita
 class BookingSchema(BaseModel):
