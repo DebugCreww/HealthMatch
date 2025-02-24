@@ -11,7 +11,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY ./src /app/src
 
 # Espone la porta su cui l'applicazione sarà in esecuzione
-EXPOSE 8002
+EXPOSE 8001
 
 # Comando per avviare l'applicazione
-CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8002"]
+CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8001"]

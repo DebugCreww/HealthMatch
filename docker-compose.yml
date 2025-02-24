@@ -47,6 +47,13 @@ services:
     networks:
       - backend
 
+  sqlite:
+    image: keinos/sqlite3
+    volumes:
+      - ./data:/data
+    networks:
+      - backend
+
 networks:
   backend:
     driver: bridge

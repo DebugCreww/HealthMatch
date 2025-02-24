@@ -1,0 +1,5 @@
+fastapi
+uvicorn
+sqlalchemy
+pydantic
+stripe  # Se si utilizza Stripe per i pagamenti

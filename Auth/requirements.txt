@@ -2,7 +2,7 @@ sqlalchemy
 jose
 python-jose
 fastapi
-sqlalchemy
 pyjwt
 passlib
 uvicorn
+sqlite

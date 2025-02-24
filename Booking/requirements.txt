@@ -1,5 +1,5 @@
+sqlite
 fastapi
-sqlalchemy
 uvicorn
-passlib
+sqlalchemy
 pydantic

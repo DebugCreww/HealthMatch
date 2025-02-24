@@ -3,3 +3,7 @@ uvicorn
 requests
 python-dotenv
 sendgrid
+sqlalchemy
+pydantic
+sqlite
+smtplib  # Se si utilizza SMTP per le notifiche email
