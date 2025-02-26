@@ -1,59 +1,73 @@
+version: '3.8'
+
 services:
+  api-gateway:
+    build:
+      context: ./API_GATEWAY
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    depends_on:
+      - auth-service
+      - booking-service
+      - catalog-service
+      - notification-service
+      - payment-service
+      - users-service
+
   auth-service:
     build:
-      context: ./auth-service
+      context: ./Auth
+      dockerfile: Dockerfile
     ports:
-      - "8001:8000"
-    networks:
-      - backend
-
-  user-service:
-    build:
-      context: ./user-service
-    ports:
-      - "8002:8000"
-    networks:
-      - backend
-
-  catalog-service:
-    build:
-      context: ./catalog-service
-    ports:
-      - "8004:8000"
-    networks:
-      - backend
+      - "8001:8001"
+    environment:
+      - DATABASE_URL=sqlite:///./auth.db
 
   booking-service:
     build:
-      context: ./booking-service
+      context: ./Booking
+      dockerfile: Dockerfile
     ports:
-      - "8003:8000"
-    networks:
-      - backend
+      - "8002:8002"
+    environment:
+      - DATABASE_URL=sqlite:///./booking.db
+
+  catalog-service:
+    build:
+      context: ./Catalog
+      dockerfile: Dockerfile
+    ports:
+      - "8003:8003"
+    environment:
+      - DATABASE_URL=sqlite:///./catalog.db
+
+  notification-service:
+    build:
+      context: ./Notification
+      dockerfile: Dockerfile
+    ports:
+      - "8004:8004"
+    environment:
+      - EMAIL_SENDER=your_email@example.com
+      - SENDGRID_API_KEY=your_sendgrid_api_key
 
   payment-service:
     build:
-      context: ./payment-service
+      context: ./Payment
+      dockerfile: Dockerfile
     ports:
-      - "8005:8000"
-    networks:
-      - backend
+      - "8005:8005"
+    environment:
+      - STRIPE_SECRET_KEY=your_secret_key
+      - STRIPE_PUBLISHABLE_KEY=your_publishable_key
+      - STRIPE_WEBHOOK_SECRET=your_webhook_secret
 
-  api-gateway:
+  users-service:
     build:
-      context: ./api-gateway
+      context: ./Users
+      dockerfile: Dockerfile
     ports:
-      - "8000:8000"
-    networks:
-      - backend
-
-  sqlite:
-    image: keinos/sqlite3
-    volumes:
-      - ./data:/data
-    networks:
-      - backend
-
-networks:
-  backend:
-    driver: bridge
+      - "8006:8006"
+    environment:
+      - DATABASE_URL=sqlite:///./users.db
