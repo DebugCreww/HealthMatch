@@ -7,7 +7,7 @@ HealthMatch è una piattaforma progettata per mettere in contatto clienti con pr
 Assicurati di avere installato sul tuo sistema:
 
 - Docker per l'esecuzione dei container.
-- Docker Compose per orchestrare i vari servizi.
+- Python.
 
 **Struttura del Progetto**
 
