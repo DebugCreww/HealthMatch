@@ -1,334 +1,125 @@
-# HealtMatch
-# Requisiti
+# HealthMatch
+
+HealthMatch è una piattaforma progettata per mettere in contatto clienti con professionisti del benessere, facilitando la prenotazione di servizi personalizzati.
+
+**Requisiti**
+
+Assicurati di avere installato sul tuo sistema:
 
-### **Linguaggi e Strumenti per ogni Microservizio**
+- Docker per l'esecuzione dei container.
+- Python.
+
+**Struttura del Progetto**
 
-### **1. Auth Service**
+Il progetto è composto da diversi microservizi, ciascuno con responsabilità specifiche:
 
-- **Linguaggio**: Python
-- **Framework**: FastAPI
-- **Librerie**:
-    - `PyJWT`: Per la generazione e gestione di token JWT.
-    - `passlib`: Per l'hashing delle password.
-    - `SQLAlchemy`: Per la gestione del database.
-    - `bcrypt`: Per la sicurezza delle password.
+- Auth Service: Gestione dell'autenticazione e autorizzazione.
+- User Management Service: Gestione dei profili utente.
+- Service Catalog Service: Gestione del catalogo dei servizi offerti.
+- Booking Service: Gestione delle prenotazioni tra clienti e professionisti.
+- Payment Service: Gestione dei pagamenti per i servizi prenotati.
+- Notification Service: Gestione delle notifiche verso gli utenti.
+- API Gateway: Punto di ingresso unificato per tutti i servizi.
+- Frontend: Interfaccia utente sviluppata in React.
 
----
+**Configurazione e Installazione**
 
-### **2. User Management Service**
+1. Clona il Repository
+    
+    git clone [https://github.com/DebugCreww/HealthMatch.git](https://github.com/DebugCreww/HealthMatch.git)
+    
+    cd HealthMatch
+    
+2. Configura le Variabili d'Ambiente
 
-- **Linguaggio**: Python
-- **Framework**: FastAPI
-- **Librerie**:
-    - `SQLAlchemy`: Per la gestione dei dati degli utenti.
-    - `Pydantic`: Per la validazione degli input e output.
-    - `databases`: Per gestire connessioni asincrone al database.
+Ogni microservizio potrebbe richiedere specifiche variabili d'ambiente. È consigliabile creare un file `.env` nella root del progetto per definire queste variabili.
 
----
+Esempio di contenuto del file `.env`:
 
-### **3. Service Catalog Service**
+DATABASE_URL=sqlite:///./healthmatch.db
 
-- **Linguaggio**: Python
-- **Framework**: FastAPI
-- **Librerie**:
-    - `SQLAlchemy`: Per la gestione del catalogo servizi.
-    - `Pydantic`: Per la validazione.
-    - `databases`: Per la connessione asincrona al database.
-    - `pytest`: Per il testing.
+AUTH_SECRET_KEY=your_secret_key
 
----
+AUTH_ALGORITHM=HS256
 
-### **4. Booking Service**
+1. Aggiorna il Docker Compose per SQLite
 
-- **Linguaggio**: Python
-- **Framework**: FastAPI
-- **Librerie**:
-    - `SQLAlchemy`: Per gestire le relazioni di prenotazione.
-    - `Pydantic`: Per i modelli di validazione.
-    - `httpx`: Per comunicazioni asincrone (se richiesto da altri microservizi).
+Nel file `docker-compose.yml`, assicurati che i servizi siano configurati per utilizzare SQLite.
 
----
+1. Avvia i Servizi con Docker Compose
+    
+    docker-compose up --build
+    
+2. Accesso all'Applicazione
+- Frontend: Accedi tramite [http://localhost:3000](http://localhost:3000/) (o la porta configurata) per l'interfaccia utente.
+- API Gateway: Le API sono accessibili tramite [http://localhost:8000](http://localhost:8000/) (o la porta configurata).
 
-### **5. Payment Service**
+**Definizione degli Oggetti di Interfaccia**
 
-- **Linguaggio**: Python
-- **Framework**: FastAPI
-- **Librerie**:
-    - `stripe`: Per l'integrazione con Stripe (o `paypalrestsdk` per PayPal).
-    - `Pydantic`: Per la validazione.
-    - `SQLAlchemy`: Per tracciare i pagamenti nel database.
+1. Dashboard Cliente
+- Funzionalità: Visualizzazione delle prenotazioni attive, storico delle prenotazioni e accesso rapido ai servizi preferiti.
+- Elementi UI: Pannello di controllo con riepilogo, link rapidi ai servizi e notifiche recenti.
+1. Lista Servizi
+- Funzionalità: Esplorazione dei servizi offerti dai professionisti, con possibilità di filtrare per categoria, prezzo e valutazione.
+- Elementi UI: Elenco dei servizi con immagini, descrizioni brevi, prezzi e pulsanti per la prenotazione.
+1. Calendario Prenotazioni
+- Funzionalità: Visualizzazione delle disponibilità dei professionisti e gestione degli appuntamenti.
+- Elementi UI: Calendario interattivo con slot disponibili e opzioni per la prenotazione.
+1. Profilo Professionista
+- Funzionalità: Visualizzazione delle informazioni dettagliate sul professionista, comprese le qualifiche, le recensioni e i servizi offerti.
+- Elementi UI: Sezione con foto del professionista, biografia, elenco dei servizi e valutazioni dei clienti.
+1. Sezione Recensioni
+- Funzionalità: Consultazione delle recensioni lasciate dai clienti e possibilità di aggiungere una nuova recensione.
+- Elementi UI: Elenco delle recensioni con valutazioni a stelle, commenti e form per l'inserimento di nuove recensioni.
 
----
+**Struttura delle Pagine**
 
-### **6. Notification Service (opzionale)**
+1. Home Page
+- Sezioni Chiave: Introduzione alla piattaforma, servizi in evidenza e testimonianze dei clienti.
+- Componenti Inclusi: Banner promozionale, carosello dei servizi e sezione delle recensioni.
+1. Pagina del Servizio
+- Sezioni Chiave: Dettagli del servizio, informazioni sul professionista e calendario delle disponibilità.
+- Componenti Inclusi: Descrizione del servizio, profilo del professionista e modulo di prenotazione.
+1. Pagina del Profilo Utente
+- Sezioni Chiave: Informazioni personali, storico delle prenotazioni e impostazioni dell'account.
+- Componenti Inclusi: Form per l'aggiornamento dei dati personali, elenco delle prenotazioni passate e opzioni per la gestione dell'account.
+1. Pagina delle Recensioni
+- Sezioni Chiave: Elenco delle recensioni ricevute e form per l'invio di nuove recensioni.
+- Componenti Inclusi: Lista delle recensioni con opzioni di filtro e modulo per l'aggiunta di feedback.
 
-- **Linguaggio**: Python
-- **Framework**: FastAPI
-- **Librerie**:
-    - `smtplib` o `SendGrid`: Per l'invio di email.
-    - `pika` o `celery`: Per la gestione delle code di messaggi (es. RabbitMQ).
-    - `Pydantic`: Per validazione dei payload.
+**Modello Architetturale**
 
----
+HealthMatch adotta un'architettura a microservizi, in cui ogni servizio è responsabile di una specifica funzionalità. I principali componenti includono:
 
-### **7. API Gateway**
+- Auth Service: Gestisce l'autenticazione e l'autorizzazione degli utenti.
+- User Management Service: Si occupa della gestione dei profili utente.
+- Service Catalog Service: Mantiene il catalogo dei servizi offerti.
+- Booking Service: Gestisce le prenotazioni tra clienti e professionisti.
+- Payment Service: Si occupa della gestione dei pagamenti.
+- Notification Service: Invia notifiche agli utenti.
+- API Gateway: Funziona come punto di ingresso unificato, instradando le richieste ai rispettivi servizi.
+- Frontend: Fornisce l'interfaccia utente.
 
-- **Linguaggio**: Python
-- **Framework**: FastAPI
-- **Librerie**:
-    - `httpx`: Per instradare richieste ai microservizi.
-    - `Pydantic`: Per validazione delle richieste.
-    - `pytest`: Per il testing delle integrazioni.
-    - `uvicorn`: Per l'esecuzione del server.
+**Aspetti Implementativi**
 
----
+L'implementazione delle API REST segue un'architettura basata su FastAPI per garantire alte prestazioni e scalabilità.
 
-### **Gestione dell'intero sistema**
+- Tutte le API sono documentate tramite Swagger e OpenAPI.
+- I dati vengono memorizzati in SQLite per garantire leggerezza e semplicità di gestione.
+- I pagamenti vengono elaborati attraverso Stripe o PayPal.
+- Il frontend comunica con il backend tramite chiamate REST ai microservizi.
 
-### **1. Strumenti di gestione del progetto**
+**Test**
 
-- **Version Control**: Git (con GitHub/GitLab/Bitbucket).
-- **Containerizzazione**: Docker per ogni microservizio.
-- **Orchestrazione**: Docker Compose per lo sviluppo locale; Kubernetes per la produzione.
+Per eseguire i test unitari e di integrazione:
+docker-compose exec <nome_servizio> pytest
 
----
+Sostituisci `<nome_servizio>` con il nome del servizio su cui desideri eseguire i test.
 
-### **2. Database**
+**Contributi**
 
-- **Scelta dei database**:
-    - PostgreSQL: Per dati strutturati come utenti, prenotazioni, catalogo.
-    - Redis: Per cache e gestione di sessioni (opzionale).
-    - MongoDB: Per dati non strutturati o logs (opzionale).
-- **Schema di separazione**:
-    - Ogni microservizio gestisce il proprio database per una separazione delle responsabilità.
+Contributi, segnalazioni di bug e suggerimenti sono benvenuti! Per favore, apri un'issue o una pull request su [https://github.com/DebugCreww/HealthMatch](https://github.com/DebugCreww/HealthMatch).
 
----
+**Licenza**
 
-### **3. Comunicazione tra microservizi**
-
-- **Protocollo**:
-    - gRPC: Per comunicazioni rapide e fortemente tipizzate.
-    - REST: Per endpoint HTTP più semplici da gestire inizialmente.
-- **Code di messaggi**:
-    - RabbitMQ o Kafka: Per gestire task asincroni (es. notifiche, elaborazione pagamenti).
-
----
-
-### **4. Sicurezza**
-
-- **Autenticazione e Autorizzazione**:
-    - Utilizzo di JWT con scadenza per sessioni sicure.
-    - Middleware per convalidare token JWT in ciascun microservizio.
-- **Crittografia**:
-    - Crittografia dei dati sensibili (password, dettagli di pagamento) con `bcrypt` o `PyCrypto`.
-- **HTTPS**:
-    - Configura NGINX/Traefik per servire l'app tramite HTTPS.
-
----
-
-### **5. Deployment**
-
-- **Ambiente di Produzione**:
-    - Utilizzo di Kubernetes per orchestrare i container.
-    - Servizi cloud consigliati: AWS (EKS), Google Cloud (GKE), Azure (AKS).
-- **Monitoraggio**:
-    - Prometheus e Grafana per monitorare lo stato e le prestazioni dei microservizi.
-    - ELK Stack (Elasticsearch, Logstash, Kibana) per il logging centralizzato.
-
----
-
-### **6. Test e QA**
-
-- **Tipi di test**:
-    - **Unit Test**: Test dei singoli componenti in ogni microservizio.
-    - **Integration Test**: Verifica delle interazioni tra i microservizi.
-    - **End-to-End Test**: Simulazione dei flussi completi degli utenti.
-- **Strumenti consigliati**:
-    - `pytest`: Per i test unitari e di integrazione.
-    - `Postman` o `Newman`: Per testare manualmente le API.
-
----
-
-### **7. CI/CD (opzionale per ora, ma consigliato a lungo termine)**
-
-- **Pipeline consigliata**:
-    - Lanciare test unitari -> Build dei container Docker -> Deploy in staging -> Test automatici -> Deploy in produzione.
-- **Strumenti**:
-    - GitHub Actions, GitLab CI/CD, Jenkins.
-
----
-
-### **Approccio Generale**
-
-1. **Step iniziale**: Completa i microservizi principali (Auth, User, Booking).
-2. **Passo successivo**: Integra i microservizi con l'API Gateway.
-3. **Testing e iterazione**: Rilascia una versione minima funzionante (MVP) e migliora iterativamente.
-
-
-
-### **1. Auth Service**
-
-**Scopo**: Gestire l'autenticazione e l'autorizzazione degli utenti nel sistema.
-
-### **Funzioni principali**:
-
-1. **Registrazione utenti** (`POST /auth/register`):
-    - Permette a un cliente o professionista di creare un account.
-    - Input: Nome, email, password, ruolo (cliente o professionista).
-    - Output: Conferma della registrazione o errore (es. email già registrata).
-2. **Login utenti** (`POST /auth/login`):
-    - Permette agli utenti di accedere.
-    - Input: Email e password.
-    - Output: Token JWT utilizzabile per accedere alle altre risorse.
-3. **Refresh token** (`POST /auth/refresh`):
-    - Genera un nuovo token JWT prima della scadenza di quello attuale.
-    - Input: Token JWT scaduto.
-    - Output: Nuovo token JWT.
-4. **Verifica token** (`POST /auth/verify`):
-    - Controlla la validità di un token JWT.
-    - Output: Conferma della validità o errore (token scaduto/non valido).
-
----
-
-### **2. User Management Service**
-
-**Scopo**: Gestire i profili degli utenti (clienti e professionisti).
-
-### **Funzioni principali**:
-
-1. **Visualizza profilo utente** (`GET /users/{user_id}`):
-    - Recupera le informazioni di un cliente o professionista specifico.
-    - Output: Nome, email, ruolo, informazioni aggiuntive.
-2. **Aggiorna profilo utente** (`PUT /users/{user_id}`):
-    - Permette agli utenti di aggiornare le proprie informazioni (es. nome, email, password).
-    - Input: Informazioni aggiornate.
-3. **Elimina profilo utente** (`DELETE /users/{user_id}`):
-    - Rimuove un profilo dal sistema.
-    - Output: Conferma dell'eliminazione.
-4. **Lista professionisti** (`GET /users/professionals`):
-    - Ritorna un elenco di professionisti filtrabili (es. per categoria o disponibilità).
-    - Output: Nome, categoria, recensioni, esperienza.
-
----
-
-### **3. Service Catalog Service**
-
-**Scopo**: Gestire i servizi offerti dai professionisti.
-
-### **Funzioni principali**:
-
-1. **Aggiungi un servizio** (`POST /catalog/services`):
-    - Permette a un professionista di aggiungere un nuovo servizio.
-    - Input: Nome del servizio, descrizione, prezzo, categoria.
-    - Output: Conferma dell'aggiunta.
-2. **Elimina un servizio** (`DELETE /catalog/services/{service_id}`):
-    - Rimuove un servizio dal catalogo.
-    - Output: Conferma della cancellazione.
-3. **Modifica un servizio** (`PUT /catalog/services/{service_id}`):
-    - Permette a un professionista di aggiornare i dettagli di un servizio.
-    - Input: Dettagli aggiornati (es. prezzo, descrizione).
-4. **Visualizza servizi** (`GET /catalog/services`):
-    - Recupera tutti i servizi disponibili, con possibilità di filtri (es. categoria, prezzo).
-    - Output: Elenco dei servizi.
-5. **Dettaglio di un servizio** (`GET /catalog/services/{service_id}`):
-    - Ritorna i dettagli di un servizio specifico (nome, descrizione, prezzo, professionista).
-
----
-
-### **4. Booking Service**
-
-**Scopo**: Gestire le prenotazioni di servizi tra clienti e professionisti.
-
-### **Funzioni principali**:
-
-1. **Crea prenotazione** (`POST /bookings`):
-    - Permette a un cliente di prenotare un servizio.
-    - Input: `service_id`, `professional_id`, data e ora della prenotazione.
-    - Output: ID della prenotazione.
-2. **Visualizza prenotazione** (`GET /bookings/{booking_id}`):
-    - Recupera i dettagli di una prenotazione specifica.
-    - Output: Data, ora, stato (es. confermato, completato).
-3. **Elenco prenotazioni utente** (`GET /bookings/user/{user_id}`):
-    - Lista delle prenotazioni di un cliente o di un professionista.
-    - Output: Elenco con data, stato, dettagli servizio.
-4. **Aggiorna stato prenotazione** (`PUT /bookings/{booking_id}`):
-    - Aggiorna lo stato di una prenotazione (es. confermato, completato, annullato).
-    - Input: Nuovo stato.
-5. **Elimina prenotazione** (`DELETE /bookings/{booking_id}`):
-    - Rimuove una prenotazione.
-    - Output: Conferma della cancellazione.
-
----
-
-### **5. Payment Service**
-
-**Scopo**: Gestire i pagamenti relativi alle prenotazioni.
-
-### **Funzioni principali**:
-
-1. **Elabora pagamento** (`POST /payments`):
-    - Processa un pagamento per una prenotazione.
-    - Input: `booking_id`, metodo di pagamento (es. carta di credito), importo.
-    - Output: ID del pagamento, stato (es. completato, fallito).
-2. **Visualizza dettagli pagamento** (`GET /payments/{payment_id}`):
-    - Recupera i dettagli di un pagamento specifico.
-3. **Storico pagamenti utente** (`GET /payments/user/{user_id}`):
-    - Lista dei pagamenti effettuati da un cliente.
-4. **Annulla pagamento** (`POST /payments/cancel/{payment_id}`):
-    - Annulla un pagamento in sospeso o rimborsa l'importo.
-5. **Verifica stato pagamento** (`GET /payments/status/{payment_id}`):
-    - Controlla lo stato di un pagamento (completato, in sospeso).
-
----
-
-### **6. Notification Service**
-
-**Scopo**: Inviare notifiche ai clienti e ai professionisti.
-
-### **Funzioni principali**:
-
-1. **Invia notifica Slack** (`POST /notifications/slack`):
-    - Invia una notifica a un canale Slack (es. conferma prenotazione).
-    - Input: Canale Slack, messaggio.
-2. **Invia notifica email** (`POST /notifications/email`):
-    - Invia una notifica via email.
-    - Input: Destinatario, oggetto, corpo del messaggio.
-3. **Visualizza notifiche inviate** (`GET /notifications/logs`):
-    - Recupera lo storico delle notifiche inviate.
-
----
-
-### **7. LLM Service**
-
-**Scopo**: Fornire funzionalità basate su un modello di linguaggio AI.
-
-### **Funzioni principali**:
-
-1. **Completamento testo** (`POST /llm/completion`):
-    - Esegue il completamento di un testo fornito.
-    - Input: Frase o contesto iniziale.
-2. **Classificazione testo** (`POST /llm/classify`):
-    - Classifica un testo in base a categorie definite.
-3. **Risposta a domanda** (`POST /llm/qa`):
-    - Risponde a domande in base a un contesto fornito.
-4. **Analisi sentimentale** (`POST /llm/sentiment`):
-    - Analizza il sentimento di un testo (positivo, negativo, neutro).
-5. **Storico richieste** (`GET /llm/logs`):
-    - Visualizza lo storico delle richieste elaborate dal modello.
-
----
-
-### **8. API Gateway**
-
-**Scopo**: Instradare tutte le richieste ai rispettivi microservizi.
-
-### **Funzioni principali**:
-
-1. **Autenticazione delle richieste**:
-    - Verifica e decodifica i token JWT.
-2. **Routing delle richieste**:
-    - Instrada le richieste agli endpoint corretti.
-3. **Rate Limiting**:
-    - Limita il numero di richieste per utente o IP.
-4. **Log delle richieste**:
-    - Registra ogni richiesta per monitoraggio e debugging.
+Questo progetto è distribuito sotto la licenza MIT. Vedi il file LICENSE per maggiori dettagli.
