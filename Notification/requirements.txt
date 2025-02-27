@@ -1,7 +1,6 @@
 fastapi
 uvicorn
-requests
-python-dotenv
-sendgrid
-sqlalchemy
 pydantic
+sendgrid
+python-dotenv
+sqlalchemy

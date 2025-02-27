@@ -1,5 +1,8 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from fastapi import FastAPI
+app = FastAPI()
+# Aggiungi rotte, middleware, ecc.
 
 DATABASE_URL = "sqlite:///./catalog.db"
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
