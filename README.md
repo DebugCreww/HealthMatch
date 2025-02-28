@@ -25,11 +25,11 @@ Il progetto è composto da diversi microservizi, ciascuno con responsabilità sp
 **Configurazione e Installazione**
 
 1. Clona il Repository
-    
+    ```bash
     git clone [https://github.com/DebugCreww/HealthMatch.git](https://github.com/DebugCreww/HealthMatch.git)
     
     cd HealthMatch
-    
+      
 2. Configura le Variabili d'Ambiente
 
 Ogni microservizio potrebbe richiedere specifiche variabili d'ambiente. È consigliabile creare un file `.env` nella root del progetto per definire queste variabili.
