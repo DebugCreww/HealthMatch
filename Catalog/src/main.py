@@ -3,8 +3,6 @@ from src.routes.service_routes import router as service_router
 from sqlalchemy.orm import sessionmaker
 from fastapi import FastAPI
 app = FastAPI()
-# Aggiungi rotte, middleware, ecc.
-
 # Inclusione del router per le rotte del catalogo
 app.include_router(service_router)
 
