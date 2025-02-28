@@ -1,4 +1,4 @@
-FROM python:3.10-slim
+FROM python:3.12-slim
 
 # Imposta la directory di lavoro
 WORKDIR /app
@@ -14,4 +14,4 @@ COPY ./src /app/src
 EXPOSE 8000
 
 # Comando per avviare l'applicazione
-CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

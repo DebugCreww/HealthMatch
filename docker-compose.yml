@@ -1,73 +1,100 @@
-version: '3.8'
-
+version: '3'
 services:
   api-gateway:
-    build:
-      context: ./API_GATEWAY
-      dockerfile: Dockerfile
+    build: ./API-GATEWAY
+    container_name: healtmatch-api-gateway
     ports:
       - "8000:8000"
-    depends_on:
-      - auth-service
-      - booking-service
-      - catalog-service
-      - notification-service
-      - payment-service
-      - users-service
+    networks:
+      - healtmatch-network
 
-  auth-service:
-    build:
-      context: ./Auth
-      dockerfile: Dockerfile
+  auth:
+    build: ./Auth
+    container_name: healtmatch-auth-service
     ports:
       - "8001:8001"
     environment:
       - DATABASE_URL=sqlite:///./auth.db
+    networks:
+      - healtmatch-network
 
-  booking-service:
-    build:
-      context: ./Booking
-      dockerfile: Dockerfile
+  booking:
+    build: ./Booking
+    container_name: healtmatch-booking-service
     ports:
       - "8002:8002"
     environment:
       - DATABASE_URL=sqlite:///./booking.db
+    networks:
+      - healtmatch-network
 
-  catalog-service:
-    build:
-      context: ./Catalog
-      dockerfile: Dockerfile
+  catalog:
+    build: ./Catalog
+    container_name: healtmatch-catalog-service
     ports:
       - "8003:8003"
     environment:
       - DATABASE_URL=sqlite:///./catalog.db
+    networks:
+      - healtmatch-network
 
-  notification-service:
-    build:
-      context: ./Notification
-      dockerfile: Dockerfile
+  notification:
+    build: ./Notification
+    container_name: healtmatch-notification-service
     ports:
       - "8004:8004"
     environment:
-      - EMAIL_SENDER=your_email@example.com
-      - SENDGRID_API_KEY=your_sendgrid_api_key
+      - DATABASE_URL=sqlite:///./notification.db
+    networks:
+      - healtmatch-network
 
-  payment-service:
-    build:
-      context: ./Payment
-      dockerfile: Dockerfile
+  payment:
+    build: ./Payment
+    container_name: healtmatch-payment-service
     ports:
       - "8005:8005"
     environment:
-      - STRIPE_SECRET_KEY=your_secret_key
-      - STRIPE_PUBLISHABLE_KEY=your_publishable_key
-      - STRIPE_WEBHOOK_SECRET=your_webhook_secret
+      - DATABASE_URL=sqlite:///./payment.db
+    networks:
+      - healtmatch-network
 
-  users-service:
-    build:
-      context: ./Users
-      dockerfile: Dockerfile
+  user:
+    build: ./Users
+    container_name: healtmatch-users-service
     ports:
       - "8006:8006"
     environment:
-      - DATABASE_URL=sqlite:///./users.db
+      - DATABASE_URL=sqlite:///./user.db
+    networks:
+      - healtmatch-network
+
+  web:
+    stdin_open: true
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    build:
+      context: ./docker-react
+      dockerfile: Dockerfile.dev
+    ports:
+      - '3000:3000'
+    volumes:
+      - /app/node_modules
+      - ./docker-react:/app
+    networks:
+      - healtmatch-network
+
+  tests:
+    stdin_open: true
+    build:
+      context: ./docker-react
+      dockerfile: Dockerfile.dev
+    volumes:
+      - /app/node_modules
+      - ./docker-react:/app
+    command: ['npm', 'run', 'test']
+    networks:
+      - healtmatch-network
+
+networks:
+  healtmatch-network:
+    driver: bridge
