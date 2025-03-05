@@ -10,10 +10,10 @@ class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, index=True)
-    email = Column(String, unique=True, nullable=False, index=True)
-    hashed_password = Column(String, nullable=False)
-    role = Column(String, nullable=False)
+    name = Column(String, nullable=False)
+    email = Column(String, unique=True, index=True, nullable=False)
+    hashed_password = Column(String, nullable=False)  # Assicurati che sia questo il nome
+    role = Column(String, nullable=False)  # "client" o "professional"
 
 # Configurazione database
 DATABASE_URL = "sqlite:///./auth.db"

@@ -1,6 +1,7 @@
-fastapi
-uvicorn
-pydantic
-stripe
-sqlalchemy
-python-dotenv
+fastapi>=0.68.0
+uvicorn>=0.15.0
+pydantic>=1.8.2
+stripe>=4.0.0
+httpx>=0.19.0
+sqlalchemy>=1.4.0
+python-dotenv>=0.19.0

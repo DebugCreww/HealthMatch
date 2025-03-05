@@ -1,23 +1,67 @@
-from sqlalchemy import create_engine
-from src.routes.service_routes import router as service_router
-from sqlalchemy.orm import sessionmaker
 from fastapi import FastAPI
-app = FastAPI()
-# Inclusione del router per le rotte del catalogo
-app.include_router(service_router)
+from fastapi.middleware.cors import CORSMiddleware
+from .routes.catalog_routes import router as catalog_router
+from .db.session import engine
+from .models.service_model import Base
 
-DATABASE_URL = "sqlite:///./catalog.db"
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+# Inizializzazione dell'app FastAPI
+app = FastAPI(
+    title="HealthMatch Catalog Service",
+    description="Servizio di gestione catalogo per HealthMatch",
+    version="1.0.0"
+)
 
-def get_db():
+# Configurazione CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # In produzione, limita alle origini specifiche
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Registrazione del router principale
+app.include_router(catalog_router)
+
+# Creazione delle tabelle nel database
+Base.metadata.create_all(bind=engine)
+
+# Endpoint di status check
+@app.get("/status")
+def status():
+    return {"status": "Catalog service is running"}
+
+# Script di inizializzazione dei dati
+@app.on_event("startup")
+async def startup_db_client():
+    """Inizializza dati di base nel database se necessario."""
+    from sqlalchemy.orm import Session
+    from .db.session import SessionLocal
+    from .models.service_model import Category, Specialty, Professional, Service
+    
     db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-# Rotta di base per verificare se il servizio di catalogo è in esecuzione
-@app.get("/")
-def read_root():
-    return {"message": "Catalog Service is running"}
+    
+    # Verifica se ci sono già dati nel database
+    if db.query(Category).count() == 0:
+        # Categorie di base
+        categories = [
+            Category(name="Visita specialistica", description="Visite con specialisti della salute"),
+            Category(name="Esame diagnostico", description="Esami per la diagnosi di patologie"),
+            Category(name="Terapia", description="Trattamenti terapeutici")
+        ]
+        db.add_all(categories)
+        db.commit()
+        
+    if db.query(Specialty).count() == 0:
+        # Specialità di base
+        specialties = [
+            Specialty(name="Cardiologia", description="Specializzazione in malattie del cuore"),
+            Specialty(name="Dermatologia", description="Specializzazione in malattie della pelle"),
+            Specialty(name="Ginecologia", description="Specializzazione in salute femminile"),
+            Specialty(name="Psicologia", description="Specializzazione in salute mentale"),
+            Specialty(name="Ortopedia", description="Specializzazione in sistema muscolo-scheletrico")
+        ]
+        db.add_all(specialties)
+        db.commit()
+    
+    db.close()

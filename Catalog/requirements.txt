@@ -3,3 +3,5 @@ uvicorn
 pydantic
 sqlalchemy
 python-dotenv
+eralchemy2==1.3.6
+pygraphviz==1.10

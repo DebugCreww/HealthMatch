@@ -1,3 +1,6 @@
+# Correzione 2: src/controllers/auth_controller.py
+# Questo file corregge le incoerenze tra il controller e il servizio di autenticazione
+
 from fastapi import APIRouter, HTTPException
 from src.services.auth_service import (
     authenticate_user,
@@ -31,11 +34,11 @@ def login(login_data: LoginSchema):
     API endpoint per effettuare il login.
     """
     # Autenticazione dell'utente
-    token = authenticate_user(login_data.email, login_data.password)
-    if not token:
-        raise HTTPException(status_code=401, detail="Invalid credentials")
+    result = authenticate_user(login_data.email, login_data.password)
+    if "error" in result:
+        raise HTTPException(status_code=401, detail=result["error"])
     # Restituisce il token di accesso
-    return token
+    return result
 
 # Rotta per la registrazione
 @router.post("/register")

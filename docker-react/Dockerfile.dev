@@ -2,12 +2,37 @@ FROM node:16-alpine
 
 WORKDIR '/app'
 
-COPY package.json ./
-COPY package-lock.json ./
+# Copia prima i file di manifesto delle dipendenze
+COPY package.json .
+COPY package-lock.json* ./ 
+
+# Installa tutte le dipendenze
 RUN npm install
 
-RUN npx tailwindcss init -p
+# Installa le dipendenze specifiche se non sono già incluse
+RUN npm install --save \
+    @stripe/react-stripe-js \
+    @stripe/stripe-js \
+    axios \
+    date-fns \
+    lucide-react \
+    react-hot-toast \
+    react-router-dom
 
+# Installa le dev dependencies
+RUN npm install --save-dev \
+    autoprefixer \
+    postcss \
+    tailwindcss
+
+# Crea il file di configurazione di Tailwind se non esiste
+RUN if [ ! -f tailwind.config.js ]; then npx tailwindcss init -p; fi
+
+# Copia il resto dei file del progetto
 COPY . .
 
+# Espone la porta utilizzata dall'applicazione
+EXPOSE 3000
+
+# Comando di avvio
 CMD ["npm", "run", "start"]

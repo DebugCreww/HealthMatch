@@ -1,7 +1,7 @@
 from fastapi import APIRouter
-from src.controllers.user_controller import router as user_router
+from ..controllers.user_controller import router as user_controller
 
-# Creazione di un router per le rotte di gestione utenti
 router = APIRouter()
-# Inclusione del router del controller di gestione utenti con prefisso e tag
-router.include_router(user_router, prefix="/users", tags=["User Management"])
+
+# Includiamo il router del controller con il prefisso /api/v1
+router.include_router(user_controller, prefix="/api/v1", tags=["Users"])

@@ -1,14 +1,11 @@
-import os
-import stripe
 from fastapi import FastAPI
-from routes import payment_routes
-from dotenv import load_dotenv
+from src.routes.payment_routes import router as payment_router
 
-load_dotenv()
+app = FastAPI(title="HealthMatch Payment Service")
 
-app = FastAPI()
+# Registra il router
+app.include_router(payment_router)
 
-stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
-
-app.include_router(payment_routes.router, prefix="/payments")
-
+@app.get("/status")
+def status():
+    return {"status": "ok"}

@@ -1,77 +1,143 @@
-version: '3'
+version: '3.8'
+
 services:
   api-gateway:
     build: ./API-GATEWAY
-    container_name: healtmatch-api-gateway
+    container_name: healthmatch-api-gateway
     ports:
       - "8000:8000"
+    depends_on:
+      - auth
+      - booking
+      - catalog
+      - payment
+      - notification
+      - users
+    environment:
+      - AUTH_SERVICE_URL=http://auth-service:8001/api/v1
+      - USERS_SERVICE_URL=http://users-service:8006/api/v1
+      - BOOKING_SERVICE_URL=http://booking-service:8002/api/v1
+      - CATALOG_SERVICE_URL=http://catalog-service:8003/api/v1
+      - PAYMENT_SERVICE_URL=http://payment-service:8005/api/v1
+      - NOTIFICATION_SERVICE_URL=http://notification-service:8004/api/v1
     networks:
-      - healtmatch-network
+      - healthmatch-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
 
   auth:
     build: ./Auth
-    container_name: healtmatch-auth-service
+    container_name: healthmatch-auth-service
     ports:
       - "8001:8001"
     environment:
       - DATABASE_URL=sqlite:///./auth.db
+      - JWT_SECRET_KEY=your_production_secret_key
+      - JWT_EXPIRE_MINUTES=30
     networks:
-      - healtmatch-network
+      - healthmatch-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
 
   booking:
     build: ./Booking
-    container_name: healtmatch-booking-service
+    container_name: healthmatch-booking-service
     ports:
       - "8002:8002"
     environment:
       - DATABASE_URL=sqlite:///./booking.db
+      - PAYMENT_SERVICE_URL=http://payment-service:8005/api/v1
+      - NOTIFICATION_SERVICE_URL=http://notification-service:8004/api/v1
     networks:
-      - healtmatch-network
+      - healthmatch-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
 
   catalog:
     build: ./Catalog
-    container_name: healtmatch-catalog-service
+    container_name: healthmatch-catalog-service
     ports:
       - "8003:8003"
     environment:
       - DATABASE_URL=sqlite:///./catalog.db
     networks:
-      - healtmatch-network
+      - healthmatch-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8003/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
 
   notification:
     build: ./Notification
-    container_name: healtmatch-notification-service
+    container_name: healthmatch-notification-service
     ports:
       - "8004:8004"
     environment:
       - DATABASE_URL=sqlite:///./notification.db
     networks:
-      - healtmatch-network
+      - healthmatch-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8004/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
 
   payment:
     build: ./Payment
-    container_name: healtmatch-payment-service
+    container_name: healthmatch-payment-service
     ports:
       - "8005:8005"
     environment:
       - DATABASE_URL=sqlite:///./payment.db
+      - STRIPE_SECRET_KEY=sk_test_51Qwl3g4bGuhP8JnHeiJ18EBTckWHYTSWsSJze09VsQEgRIfs5cC31kPVsavzGnokIQMlV8L5GmbATmn3CN9u3qjE00csdxrv2c  # Usa una chiave di test
+      - STRIPE_WEBHOOK_SECRET=whsec_test_webhook_secret_key  # Genera un webhook per test
+      - STRIPE_PUBLISHABLE_KEY=pk_test_51Qwl3g4bGuhP8JnHdmOoePEpNDmuQqc5N9iNOX2esXoc4vnBfxSTYqXHFreVOt0uU0vnsNb4rP56kUw0FYHbiYcN00fJYFxBga  # Per il frontend
     networks:
-      - healtmatch-network
+      - healthmatch-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8005/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
 
-  user:
+  users:
     build: ./Users
-    container_name: healtmatch-users-service
+    container_name: healthmatch-users-service
     ports:
       - "8006:8006"
     environment:
       - DATABASE_URL=sqlite:///./user.db
     networks:
-      - healtmatch-network
+      - healthmatch-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8006/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
 
   web:
     stdin_open: true
     environment:
       - CHOKIDAR_USEPOLLING=true
+      - REACT_APP_API_URL=http://localhost:8000/api/v1
+      - REACT_APP_STRIPE_PUBLIC_KEY=pk_test_51Qwl3g4bGuhP8JnHdmOoePEpNDmuQqc5N9iNOX2esXoc4vnBfxSTYqXHFreVOt0uU0vnsNb4rP56kUw0FYHbiYcN00fJYFxBga
     build:
       context: ./docker-react
       dockerfile: Dockerfile.dev
@@ -81,7 +147,9 @@ services:
       - /app/node_modules
       - ./docker-react:/app
     networks:
-      - healtmatch-network
+      - healthmatch-network
+    depends_on:
+      - api-gateway
 
   tests:
     stdin_open: true
@@ -93,8 +161,47 @@ services:
       - ./docker-react:/app
     command: ['npm', 'run', 'test']
     networks:
-      - healtmatch-network
+      - healthmatch-network
+
+  er-diagrams:
+    image: graphviz/graphviz:latest
+    container_name: healthmatch-er-diagrams
+    volumes:
+      - ./:/app
+      - ./docs/diagrams:/app/docs/diagrams
+    working_dir: /app
+    command: >
+      sh -c "
+        apt-get update && 
+        apt-get install -y python3 python3-pip && 
+        pip3 install eralchemy2 sqlalchemy && 
+        mkdir -p /app/docs/diagrams &&
+        python3 -c 'from scripts.er_model import generate_diagrams; generate_diagrams()'
+      "
+    networks:
+      - healthmatch-network
+    depends_on:
+      - auth
+      - notification
+      - booking
+      - catalog
+      - users
+
+  db-init:
+    image: python:3.10-slim
+    container_name: healthmatch-db-init
+    volumes:
+      - ./:/app
+    working_dir: /app
+    command: >
+      sh -c "
+        pip install sqlalchemy &&
+        python scripts/db_init.py &&
+        python scripts/seeds_gen.py
+      "
+    networks:
+      - healthmatch-network
 
 networks:
-  healtmatch-network:
+  healthmatch-network:
     driver: bridge
